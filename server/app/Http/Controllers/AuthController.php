@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
 use PragmaRX\Google2FA\Google2FA;
 use App\Mail\VerificationEmail;
 use App\Models\VerificationCode;
@@ -16,10 +16,16 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Invalid request data'
+            ], 400);
+        }
 
         if (!Auth::attempt($request->only('email', 'password')) || User::where('email', $request->email)->doesntExist()) {
             return response()->json([
@@ -36,15 +42,22 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
-            'display_name' => 'required|string',
-            'email' => 'required|email|unique:users',
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
             'password' => 'required',
+            'display_name' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Invalid request data'
+            ], 400);
+        }
 
         $user = User::create([
             'email' => $request->email,
-            'password' => Password::make($request->password),
+            'password' => Hash::make($request->password),
+            'username' => explode('@', $request->email)[0],
         ]);
 
         $user->profile()->create([
@@ -76,15 +89,9 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $google2fa = new Google2FA();
-        $otp = $google2fa->generateSecretKey();
+        $code = VerificationCode::generate($request->email);
 
-        VerificationCode::create([
-            'email' => $request->email,
-            'code' => $otp,
-        ]);
-
-        Mail::to($request->email)->send(new VerificationEmail($otp));
+        Mail::to($request->email)->send(new VerificationEmail($code));
 
         return response()->json([
             'message' => 'Verification code sent'
@@ -121,7 +128,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->firstOrFail();
-        $user->password = Password::make($request->password);
+        $user->password = Hash::make($request->password);
         $user->save();
 
         return response()->json([
@@ -136,14 +143,14 @@ class AuthController extends Controller
             'new_password' => 'required',
         ]);
 
-        if (!Password::check($request->current_password, $request->user()->password)) {
+        if (!Hash::check($request->current_password, $request->user()->password)) {
             return response()->json([
                 'message' => 'Invalid current password'
             ], 400);
         }
 
         $user = $request->user();
-        $user->password = Password::make($request->new_password);
+        $user->password = Hash::make($request->new_password);
         $user->save();
 
         return response()->json([

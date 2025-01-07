@@ -1,3 +1,3 @@
 <div>
-    <p>code: {$code}</p>
+    <p>code: {{$code}}</p>
 </div>

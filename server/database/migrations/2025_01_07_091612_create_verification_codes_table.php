@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('verification_codes', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
-            $table->string('code');
+            $table->string('code')->unique();
             $table->timestamps();
         });
     }

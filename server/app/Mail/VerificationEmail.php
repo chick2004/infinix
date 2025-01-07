@@ -16,7 +16,7 @@ class VerificationEmail extends Mailable
     use Queueable, SerializesModels;
 
     
-    protected $code;
+    public $code;
 
     public function __construct($code)
     {
