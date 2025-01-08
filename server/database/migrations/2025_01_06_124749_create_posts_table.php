@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('shared_post_id')->nullable()->constrained('posts')->onDelete('set null');
             $table->text('content');
             $table->enum('visibility', ['public', 'private', 'friends'])->default('public');
-
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

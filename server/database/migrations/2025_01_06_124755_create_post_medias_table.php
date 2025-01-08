@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->string('path');
-            $table->enum('type', ['image', 'video', 'audio', 'file'])->default('image');
+            $table->string('type');
             $table->timestamps();
         });
     }

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Hash;
 use PragmaRX\Google2FA\Google2FA;
 use App\Mail\VerificationEmail;
 use App\Models\VerificationCode;
+use Illuminate\Support\Str;
+
 
 class AuthController extends Controller
 {
@@ -44,8 +46,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required',
-            'display_name' => 'required',
+            'password' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -60,8 +61,10 @@ class AuthController extends Controller
             'username' => explode('@', $request->email)[0],
         ]);
 
+        $display_name = $request->display_name ?? preg_replace('/[^a-zA-Z0-9]/', '', explode('@', $request->email)[0]).'_'.Str::random(5);
+
         $user->profile()->create([
-            'display_name' => $request->display_name,
+            'display_name' => $display_name,
         ]);
 
         return response()->json([

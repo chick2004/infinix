@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'username',
@@ -39,6 +40,35 @@ class User extends Authenticatable
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function friend_requests_sent()
+    {
+        return $this->hasMany(FriendRequest::class, 'sender_id');
+    }
+
+    public function friend_requests_received()
+    {
+        return $this->hasMany(FriendRequest::class, 'receiver_id');
+    }
+
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'relationships', 'user_id', 'related_user_id')
+            ->orWhere('relationships.related_user_id', $this->id)
+            ->wherePivot('type', 'friend');
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'relationships', 'related_user_id', 'user_id')
+            ->wherePivot('type', 'follow');
+    }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, 'relationships', 'user_id', 'related_user_id')
+            ->wherePivot('type', 'follow');
     }
 
 
