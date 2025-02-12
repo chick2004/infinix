@@ -1,0 +1,27 @@
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* .field > * {
+    width: 100%;
+} */
+
+.label {
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0%;
+    font-weight: 400;
+}
+
+.validation_message {
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0%;
+    font-weight: 400;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
