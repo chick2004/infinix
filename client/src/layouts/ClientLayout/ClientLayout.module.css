@@ -1,3 +1,11 @@
+.layout {
+    width: 100%;
+    display: grid;
+    grid-template-rows: 45px 1fr;
+    gap: 0px;
+    height: 100vh;
+}
+
 .header {
     height: 45px;
     width: 100%;
@@ -7,38 +15,44 @@
     align-items: center;
     padding: 0px 20px;
     gap: 20px;
+    border-bottom: 1px solid var(--card-stroke-default);
 }
 
-.left {
-
-}
-
-.center {
+.header_left {
 
 }
 
-.center > * {
+.header_center {
+
+}
+
+.header_center > * {
     width: 100%;
 }
 
-.right {
+.header_right {
     display: flex;
     justify-content: flex-end;
     gap: 35px;
 }
 
-.right a {
+.header_right a {
     text-decoration: none;
     color: var(--text-secondary);
     padding: 3px;
     border-radius: 3px;
 }
 
-.right a:hover {
+.header_right a:hover {
     background-color: var(--subtle-secondary);
     box-shadow: 0px 0px 1px inset var(--subtle-secondary);
 }
 
-.right a.active {
+.header_right a.active {
     color: var(--accent-default);
 }
+
+.main {
+    min-height: 0;
+}
+
